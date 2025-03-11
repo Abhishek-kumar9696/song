@@ -36,7 +36,10 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST'],
+}));
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -63,7 +66,8 @@ io.on('connection', (socket) => {
 // server.listen(3001, () => {
 //   console.log('Backend server is running on port 3001');
 // });
+const PORT = process.env.PORT || 3001;
 
-server.listen(3001, '0.0.0.0', () => {
-  console.log('Backend server is running on port 3001');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend server is running on port ${PORT}`);
 });
