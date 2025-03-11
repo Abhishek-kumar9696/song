@@ -85,15 +85,6 @@
 // // server.listen(3001, () => {
 // //   console.log('Backend server is running on port 3001');
 // // });
-// app.get('/', (req, res) => {
-//   res.send("<h1>Welcome to SONG</h1>");
-// });
-// const PORT = process.env.PORT || 3001;
-
-// server.listen(PORT, '0.0.0.0', () => {
-//   console.log(`Backend server is running on port ${PORT}`);
-// });
-
 
 const express = require('express');
 const http = require('http');
@@ -101,50 +92,42 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-app.use(cors({ origin: '*' }));
-
+app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 });
-
-// Store the leader device ID
-
-let leaderId = null; // Track the leader device
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  if (!leaderId) {
-    leaderId = socket.id;
-    console.log('Leader assigned:', leaderId);
-  }
-
-  socket.on('playSong', (data) => {
-    console.log('Play song received:', data);
-    io.emit('playSong', data);
+  // Broadcast play event with timestamp
+  socket.on('playSong', ({ url }) => {
+    const startTime = Date.now() + 2000; // Schedule playback 2 seconds later
+    io.emit('playSong', { url, startTime });
   });
 
+  // Sync playback across devices
   socket.on('sync', (data) => {
-    if (socket.id === leaderId) {
-      io.emit('sync', data);
-    }
+    io.emit('sync', data);
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
-    if (socket.id === leaderId) {
-      leaderId = null;
-      console.log('Leader disconnected. Reassigning...');
-    }
   });
 });
 
-const PORT = process.env.PORT || 3001;
+
+
 app.get('/', (req, res) => {
   res.send("<h1>Welcome to SONG</h1>");
 });
+const PORT = process.env.PORT || 3001;
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend server is running on port ${PORT}`);
 });
