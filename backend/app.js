@@ -49,19 +49,31 @@ const io = new Server(server, {
     methods: ['GET', 'POST'], 
   },
 });
+// Store the start time for synchronization
+let globalStartTime = null;
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+  // Handle ping messages to measure latency
+  socket.on('ping', (callback) => {
+    callback(); // Respond immediately
+  });
+    // Handle playSong events
+    socket.on('playSong', (data) => {
+      console.log('Play song received:', data);
+      globalStartTime = data.startTime; // Update global start time
+      io.emit('playSong', data); // Broadcast to all clients
+    });
 
   // socket.on('playSong', (data) => {
   //   console.log('Play song received:', data); 
   //   io.emit('playSong', data); 
   // });
 
-  socket.on('playSong', (data) => {
-    const timestamp = Date.now(); // Capture the exact time of the event
-    io.emit('playSong', { url: data.url, startTime: timestamp });
-  });
+  // socket.on('playSong', (data) => {
+  //   const timestamp = Date.now(); // Capture the exact time of the event
+  //   io.emit('playSong', { url: data.url, startTime: timestamp });
+  // });
 
 
   socket.on('disconnect', () => {
