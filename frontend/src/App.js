@@ -123,18 +123,98 @@
 // export default App;
 
 
+// import React, { useState, useEffect, useRef } from 'react';
+// import io from 'socket.io-client';
+// import './App.css';
+
+// // Replace with your machine's local IP address
+// //const socket = io('http://192.168.151.112:3001'); 
+// const socket = io(process.env.BACKEND_URL || 'https://song-backend-kzjq.onrender.com');
+// //const socket = io('http://localhost:3001');
+
+// const App = () => {
+//   const [isPlaying, setIsPlaying] = useState(false);
+//   const audioRef = useRef(null);
+
+//   const handlePlayPause = () => {
+//     if (audioRef.current) {
+//       if (isPlaying) {
+//         audioRef.current.pause();
+//         setIsPlaying(false);
+//       } else {
+//         audioRef.current.src = 'https://aac.saavncdn.com/430/5c5ea5cc00e3bff45616013226f376fe_48.mp4';
+//         audioRef.current.play()
+//           .then(() => {
+//             setIsPlaying(true);
+//             socket.emit('playSong', { url: audioRef.current.src });
+//           })
+//           .catch((error) => {
+//             console.error('Error playing audio:', error);
+//           });
+//       }
+//     }
+//   };
+
+//   useEffect(() => {
+//     // socket.on('playSong', (data) => {
+//     //   if (audioRef.current) {
+//     //     audioRef.current.src = data.url;
+//     //     audioRef.current.play()
+//     //       .then(() => setIsPlaying(true))
+//     //       .catch((error) => console.error('Error playing audio:', error));
+//     //   }
+//     // });
+
+//     socket.on('playSong', (data) => {
+//       const latency = Date.now() - data.startTime; // Calculate delay
+//       const audio = audioRef.current;
+    
+//       if (audio) {
+//         audio.src = data.url;
+//         audio.currentTime = latency / 1000; // Adjust playback to sync
+//         audio.play();
+//       }
+//     });
+
+    
+
+//     return () => {
+//       socket.off('playSong');
+//     };
+//   }, []);
+
+//   return (
+//     <div className="App">
+//       <h1>Multi-Device Music Sync</h1>
+//       <div>
+//         <button onClick={handlePlayPause}>
+//           {isPlaying ? 'Pause' : 'Play'}
+//         </button>
+//       </div>
+
+//       <audio
+//         ref={audioRef}
+//         controls
+//         onEnded={() => setIsPlaying(false)}
+//       >
+//         <source src="https://aac.saavncdn.com/430/5c5ea5cc00e3bff45616013226f376fe_48.mp4" type="audio/mp4" />
+//       </audio>
+//     </div>
+//   );
+// };
+
+// export default App;
+
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import './App.css';
 
-// Replace with your machine's local IP address
-//const socket = io('http://192.168.151.112:3001'); 
 const socket = io(process.env.BACKEND_URL || 'https://song-backend-kzjq.onrender.com');
-//const socket = io('http://localhost:3001');
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
+  const [latency, setLatency] = useState(0);
 
   const handlePlayPause = () => {
     if (audioRef.current) {
@@ -142,11 +222,12 @@ const App = () => {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
+        const startTime = Date.now() + latency; // Adjust for latency
         audioRef.current.src = 'https://aac.saavncdn.com/430/5c5ea5cc00e3bff45616013226f376fe_48.mp4';
         audioRef.current.play()
           .then(() => {
             setIsPlaying(true);
-            socket.emit('playSong', { url: audioRef.current.src });
+            socket.emit('playSong', { url: audioRef.current.src, startTime });
           })
           .catch((error) => {
             console.error('Error playing audio:', error);
@@ -156,29 +237,37 @@ const App = () => {
   };
 
   useEffect(() => {
-    // socket.on('playSong', (data) => {
-    //   if (audioRef.current) {
-    //     audioRef.current.src = data.url;
-    //     audioRef.current.play()
-    //       .then(() => setIsPlaying(true))
-    //       .catch((error) => console.error('Error playing audio:', error));
-    //   }
-    // });
+    // Measure latency
+    const pingInterval = setInterval(() => {
+      const start = Date.now();
+      socket.emit('ping', () => {
+        const end = Date.now();
+        setLatency(end - start);
+      });
+    }, 1000);
 
     socket.on('playSong', (data) => {
-      const latency = Date.now() - data.startTime; // Calculate delay
-      const audio = audioRef.current;
-    
-      if (audio) {
-        audio.src = data.url;
-        audio.currentTime = latency / 1000; // Adjust playback to sync
-        audio.play();
+      if (audioRef.current) {
+        const currentTime = Date.now();
+        const delay = data.startTime - currentTime;
+        if (delay > 0) {
+          setTimeout(() => {
+            audioRef.current.src = data.url;
+            audioRef.current.play()
+              .then(() => setIsPlaying(true))
+              .catch((error) => console.error('Error playing audio:', error));
+          }, delay);
+        } else {
+          audioRef.current.src = data.url;
+          audioRef.current.play()
+            .then(() => setIsPlaying(true))
+            .catch((error) => console.error('Error playing audio:', error));
+        }
       }
     });
 
-    
-
     return () => {
+      clearInterval(pingInterval);
       socket.off('playSong');
     };
   }, []);
