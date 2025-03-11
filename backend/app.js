@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
 
 
 app.get('/', (req, res) => {
-  res.send("<h1>Welcome to SONG</h1>");
+  res.send("<h1>Welcome to SONG1</h1>");
 });
 const PORT = process.env.PORT || 3001;
 
