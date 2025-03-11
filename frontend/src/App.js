@@ -475,7 +475,7 @@ const App = () => {
         if (audioRef.current) {
           socket.emit('sync', { currentTime: audioRef.current.currentTime });
         }
-      }, 2000);
+      }, 1000);
       return () => clearInterval(syncInterval);
     }
   }, [isLeader]);
