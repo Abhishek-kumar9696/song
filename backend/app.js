@@ -41,7 +41,8 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000', 
+    origin: '*', 
+    //origin: '*',  // Allow all origins
     methods: ['GET', 'POST'], 
   },
 });
@@ -50,6 +51,7 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   socket.on('playSong', (data) => {
+    console.log('Play song received:', data); 
     io.emit('playSong', data); 
   });
 
@@ -58,6 +60,10 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3001, () => {
+// server.listen(3001, () => {
+//   console.log('Backend server is running on port 3001');
+// });
+
+server.listen(3001, '0.0.0.0', () => {
   console.log('Backend server is running on port 3001');
 });
