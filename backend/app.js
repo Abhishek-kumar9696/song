@@ -109,6 +109,8 @@ const io = new Server(server, {
   cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
+// Store the leader device ID
+
 let leaderId = null; // Track the leader device
 
 io.on('connection', (socket) => {
@@ -140,6 +142,9 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3001;
+app.get('/', (req, res) => {
+  res.send("<h1>Welcome to SONG</h1>");
+});
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend server is running on port ${PORT}`);
 });
