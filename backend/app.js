@@ -66,9 +66,9 @@ io.on('connection', (socket) => {
 // server.listen(3001, () => {
 //   console.log('Backend server is running on port 3001');
 // });
-server.get('/',(req,res) => {
-  res.send("<h1>welcome to ecommerce</h1>")
-})
+app.get('/', (req, res) => {
+  res.send("<h1>Welcome to Ecommerce</h1>");
+});
 const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, '0.0.0.0', () => {
