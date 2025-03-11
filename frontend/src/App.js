@@ -129,7 +129,7 @@ import './App.css';
 
 // Replace with your machine's local IP address
 //const socket = io('http://192.168.151.112:3001'); 
-const socket = io('http://localhost:3001');
+const socket = io('https://song-backend-kzjq.onrender.com');
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
