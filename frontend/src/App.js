@@ -193,7 +193,7 @@ import io from 'socket.io-client';
 import SaavnSearch from './components/SaavnSearch';
 import './App.css';
 
-const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001');
+const socket = io(process.env.REACT_APP_BACKEND_URL || 'https://song-backend-kzjq.onrender.com');
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
