@@ -58,14 +58,11 @@ io.on('connection', (socket) => {
   //   io.emit('playSong', data); 
   // });
 
-  // socket.on('playSong', (data) => {
-  //   const timestamp = Date.now(); // Capture the exact time of the event
-  //   io.emit('playSong', { url: data.url, startTime: timestamp });
-  // });
   socket.on('playSong', (data) => {
-    const startTime = Date.now() + 1000; // Schedule playback 1 second later
-    io.emit('playSong', { url: data.url, startTime });
+    const timestamp = Date.now(); // Capture the exact time of the event
+    io.emit('playSong', { url: data.url, startTime: timestamp });
   });
+
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);

@@ -165,26 +165,17 @@ const App = () => {
     //   }
     // });
 
-    // socket.on('playSong', (data) => {
-    //   const latency = Date.now() - data.startTime; // Calculate delay
-    //   const audio = audioRef.current;
-    
-    //   if (audio) {
-    //     audio.src = data.url;
-    //     audio.currentTime = latency / 1000; // Adjust playback to sync
-    //     audio.play();
-    //   }
-    // });
-
     socket.on('playSong', (data) => {
-      const delay = data.startTime - Date.now(); // Calculate how much time is left
+      const latency = Date.now() - data.startTime; // Calculate delay
+      const audio = audioRef.current;
     
-      setTimeout(() => {
-        audioRef.current.src = data.url;
-        audioRef.current.play();
-      }, delay); // Start exactly at the scheduled time
+      if (audio) {
+        audio.src = data.url;
+        audio.currentTime = latency / 1000; // Adjust playback to sync
+        audio.play();
+      }
     });
-    
+
     
 
     return () => {
