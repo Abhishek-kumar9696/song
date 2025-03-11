@@ -129,7 +129,8 @@ import './App.css';
 
 // Replace with your machine's local IP address
 //const socket = io('http://192.168.151.112:3001'); 
-const socket = io('https://song-backend-kzjq.onrender.com');
+const socket = io(process.env.BACKEND_URL || 'https://song-backend-kzjq.onrender.com');
+//const socket = io('http://localhost:3001');
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -155,14 +156,36 @@ const App = () => {
   };
 
   useEffect(() => {
+    // socket.on('playSong', (data) => {
+    //   if (audioRef.current) {
+    //     audioRef.current.src = data.url;
+    //     audioRef.current.play()
+    //       .then(() => setIsPlaying(true))
+    //       .catch((error) => console.error('Error playing audio:', error));
+    //   }
+    // });
+
+    // socket.on('playSong', (data) => {
+    //   const latency = Date.now() - data.startTime; // Calculate delay
+    //   const audio = audioRef.current;
+    
+    //   if (audio) {
+    //     audio.src = data.url;
+    //     audio.currentTime = latency / 1000; // Adjust playback to sync
+    //     audio.play();
+    //   }
+    // });
+
     socket.on('playSong', (data) => {
-      if (audioRef.current) {
+      const delay = data.startTime - Date.now(); // Calculate how much time is left
+    
+      setTimeout(() => {
         audioRef.current.src = data.url;
-        audioRef.current.play()
-          .then(() => setIsPlaying(true))
-          .catch((error) => console.error('Error playing audio:', error));
-      }
+        audioRef.current.play();
+      }, delay); // Start exactly at the scheduled time
     });
+    
+    
 
     return () => {
       socket.off('playSong');

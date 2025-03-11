@@ -53,9 +53,18 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
+  // socket.on('playSong', (data) => {
+  //   console.log('Play song received:', data); 
+  //   io.emit('playSong', data); 
+  // });
+
+  // socket.on('playSong', (data) => {
+  //   const timestamp = Date.now(); // Capture the exact time of the event
+  //   io.emit('playSong', { url: data.url, startTime: timestamp });
+  // });
   socket.on('playSong', (data) => {
-    console.log('Play song received:', data); 
-    io.emit('playSong', data); 
+    const startTime = Date.now() + 1000; // Schedule playback 1 second later
+    io.emit('playSong', { url: data.url, startTime });
   });
 
   socket.on('disconnect', () => {
@@ -67,7 +76,7 @@ io.on('connection', (socket) => {
 //   console.log('Backend server is running on port 3001');
 // });
 app.get('/', (req, res) => {
-  res.send("<h1>Welcome to Ecommerce</h1>");
+  res.send("<h1>Welcome to SONG</h1>");
 });
 const PORT = process.env.PORT || 3001;
 
