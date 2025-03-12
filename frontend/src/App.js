@@ -119,7 +119,7 @@ const App = () => {
     socket.on("sync", ({ currentTime }) => {
       if (!isLeader && audioRef.current) {
         const diff = currentTime - audioRef.current.currentTime;
-        if (Math.abs(diff) > 0.2) {
+        if (Math.abs(diff) > 0.1) {
           audioRef.current.currentTime = currentTime;
         } else {
           audioRef.current.playbackRate = 1 + diff * 0.1;
@@ -141,10 +141,25 @@ const App = () => {
     
     
     
-    const delay = startTime - Date.now();
-    setTimeout(() => {
-      audioRef.current.play(); // Start the song exactly at the right time
-    }, delay);
+    // const delay = startTime - Date.now();
+    // setTimeout(() => {
+    //   audioRef.current.play(); // Start the song exactly at the right time
+    // }, delay);
+
+    const delay = startTime - Date.now(); // Time left until sync start
+
+    if (delay > 0) {
+      setTimeout(() => {
+          audioRef.current.play(); // Start at the exact sync time
+      }, delay);
+  } else {
+      // If already past start time, set correct position and play
+      audioRef.current.currentTime = (Date.now() - startTime) / 1000;
+      audioRef.current.play();
+  }
+
+
+
   };
 
 
