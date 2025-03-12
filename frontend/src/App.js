@@ -8,8 +8,10 @@ import io from 'socket.io-client';
 import SaavnSearch from './components/SaavnSearch';
 import './App.css';
 
-const socket = io( process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001' || 'https://song-backend-kzjq.onrender.com '  );
+// const socket = io('https://song-backend-kzjq.onrender.com ' );
 
+// const socket = io('https://song-backend-kzjq.onrender.com ' );
+const socket = io('http://localhost:3001');
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLeader, setIsLeader] = useState(false);
@@ -39,15 +41,31 @@ const App = () => {
     };
   }, [isLeader]);
 
+  // const preloadAndPlay = (url, startTime) => {
+  //   const latency = Date.now() - startTime;
+  //   audioRef.current.src = url;
+  //   audioRef.current.load();
+  //   setTimeout(() => {
+  //     audioRef.current.play();
+  //     setIsPlaying(true);
+  //   }, Math.max(0, startTime - Date.now()));
+  // };
   const preloadAndPlay = (url, startTime) => {
     const latency = Date.now() - startTime;
     audioRef.current.src = url;
     audioRef.current.load();
-    setTimeout(() => {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }, Math.max(0, startTime - Date.now()));
+  
+    const playAudio = () => {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error("Playback error:", error));
+    };
+  
+    document.body.addEventListener("click", playAudio, { once: true });
+  
+    setTimeout(playAudio, Math.max(0, startTime - Date.now()));
   };
+  
 
   const handlePlayPause = () => {
     if (audioRef.current) {
