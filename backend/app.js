@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
 
   socket.on('playSong', (data) => {
     console.log('Play song received:', data);
-    globalStartTime = Date.now() + 100;
+    globalStartTime = Date.now() + 3000;
     io.emit('playSong', { url: data.url, startTime: globalStartTime });
   });
 
