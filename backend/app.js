@@ -126,6 +126,48 @@
 
 
 
+// const express = require('express');
+// const http = require('http');
+// const { Server } = require('socket.io');
+// const cors = require('cors');
+
+// const app = express();
+// app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
+
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: { origin: '*', methods: ['GET', 'POST'] },
+// });
+
+// let globalStartTime = null;
+
+// io.on('connection', (socket) => {
+//   console.log('User connected:', socket.id);
+
+//   socket.on('ping', (callback) => callback());
+
+//   socket.on('playSong', (data) => {
+//     console.log('Play song received:', data);
+//     globalStartTime = Date.now() + 3000;
+//     io.emit('playSong', { url: data.url, startTime: globalStartTime });
+//   });
+
+//   socket.on('sync', (data) => io.emit('sync', data));
+
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected:', socket.id);
+//   });
+// });
+
+// app.get('/', (req, res) => res.send('<h1>Welcome to SONG</h1>'));
+
+// const PORT = process.env.PORT || 3001;
+// server.listen(PORT, '0.0.0.0', () => {
+//   console.log(`Backend server is running on port ${PORT}`);
+// });
+
+
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -140,6 +182,7 @@ const io = new Server(server, {
 });
 
 let globalStartTime = null;
+let currentSong = null;
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
@@ -148,11 +191,15 @@ io.on('connection', (socket) => {
 
   socket.on('playSong', (data) => {
     console.log('Play song received:', data);
-    globalStartTime = Date.now() + 3000;
+    globalStartTime = Date.now() + 3000; // 3 seconds delay for sync
+    currentSong = data.url;
+
     io.emit('playSong', { url: data.url, startTime: globalStartTime });
   });
 
-  socket.on('sync', (data) => io.emit('sync', data));
+  socket.on('sync', (data) => {
+    io.emit('sync', data);
+  });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
