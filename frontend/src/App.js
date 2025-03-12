@@ -110,8 +110,8 @@ import io from 'socket.io-client';
 import SaavnSearch from './components/SaavnSearch';
 import './App.css';
 
-// const socket = io('https://song-backend-kzjq.onrender.com');
-const socket = io('http://localhost:3001');
+const socket = io('https://song-backend-kzjq.onrender.com');
+// const socket = io('http://localhost:3001');
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLeader, setIsLeader] = useState(false);
