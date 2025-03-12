@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
 
     socket.on('playSong', (data) => {
       console.log('Play song received:', data);
-      globalStartTime = Date.now() + 2000; // Delay by 2s for synchronization
+      globalStartTime = Date.now() + 1000; // Delay by 2s for synchronization
       io.emit('playSong', { url: data.url, startTime: globalStartTime });
     });
     

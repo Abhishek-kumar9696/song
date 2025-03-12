@@ -92,7 +92,7 @@ const App = () => {
   }, [isLeader]);
 
   return (
-    <div className="App">
+    <div className="App bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center">
       <h1>Multi-Device Music Sync 🎶</h1>
       <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
       <audio ref={audioRef} controls onEnded={() => setIsPlaying(false)} />
